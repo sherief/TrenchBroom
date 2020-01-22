@@ -175,6 +175,7 @@ namespace TrenchBroom {
                 shader.set("ShadeFaces", shadeFaces);
                 shader.set("ShowFog", showFog);
                 shader.set("Alpha", m_alpha);
+                shader.set("DisableBlend", false);
 
                 RenderFunc func(shader, applyTexture, m_faceColor);
                 if (m_alpha < 1.0f) {
@@ -185,14 +186,24 @@ namespace TrenchBroom {
                         continue;
                     }
 
+                    // Quake 3 shaders without blend functions completely disregard the texture's alpha channel
+                    const bool disableBlend = texture != nullptr && texture->blendFunc().enable == Assets::TextureBlendFunc::Enable::No;
+                    
                     // set any per-texture uniforms
                     shader.set("GridColor", gridColorForTexture(texture));
+                    if (disableBlend) {
+                        shader.set("DisableBlend", true);
+                    }
 
                     func.before(texture);
                     brushIndexHolderPtr->setupIndices();
                     brushIndexHolderPtr->render(PrimType::Triangles);
                     brushIndexHolderPtr->cleanupIndices();
                     func.after(texture);
+
+                    if (disableBlend) {
+                        shader.set("DisableBlend", false);
+                    }
                 }
                 if (m_alpha < 1.0f) {
                     glAssert(glDepthMask(GL_TRUE));

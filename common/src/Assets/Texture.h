@@ -50,7 +50,12 @@ namespace TrenchBroom {
         };
 
         struct TextureBlendFunc {
-            bool enable;
+            enum class Enable {
+                Default,
+                Yes,
+                No
+            };
+            Enable enable;
             GLenum srcFactor;
             GLenum destFactor;
         };
@@ -108,6 +113,7 @@ namespace TrenchBroom {
 
             const TextureBlendFunc& blendFunc() const;
             void setBlendFunc(GLenum srcFactor, GLenum destFactor);
+            void disableBlend();
 
             size_t usageCount() const;
             void incUsageCount();

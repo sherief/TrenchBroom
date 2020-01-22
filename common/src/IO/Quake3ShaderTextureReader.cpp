@@ -67,6 +67,8 @@ namespace TrenchBroom {
                         glGetEnum(stage.blendFunc.srcFactor),
                         glGetEnum(stage.blendFunc.destFactor)
                     );
+                } else {
+                    texture->disableBlend();
                 }
             }
 
